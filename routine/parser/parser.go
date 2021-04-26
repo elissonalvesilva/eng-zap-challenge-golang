@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
 	consts "github.com/elissonalvesilva/eng-zap-challenge-golang/utils"
@@ -19,9 +20,11 @@ type PlatformType struct {
 }
 
 func Run() {
-	var parsedZapImoveis []Imovel
-	var parsedVivaImoveis []Imovel
-
+	// var parsedZapImoveis []Imovel
+	// var parsedVivaImoveis []Imovel
+	var channelZap = make(chan Imovel)
+	var channelViva = make(chan Imovel)
+	var quit = make(chan bool)
 	path_catalog := os.Getenv("PATH_DADOS") + os.Getenv("FILENAME_CATALOG")
 	jsonFile, err := os.Open(path_catalog)
 
@@ -36,67 +39,110 @@ func Run() {
 		panic(err)
 	}
 
-	for _, imovel := range imoveis {
-		parsedImovel, platformType, err := parser(imovel)
+	// for _, imovel := range imoveis {
+	// 	// // parsedImovel, platformType, err := parserParallel(imovel, channelZap, channelViva)
 
-		if err != nil {
-			fmt.Println(imovel.ID, err)
-			continue
-		}
+	// 	// if err != nil {
+	// 	// 	fmt.Println(imovel.ID, err)
+	// 	// 	continue
+	// 	// }
 
-		if platformType == "zap" {
-			parsedZapImoveis = append(parsedZapImoveis, parsedImovel)
-		} else {
-			parsedVivaImoveis = append(parsedVivaImoveis, parsedImovel)
-		}
+	// 	// if platformType == "zap" {
+	// 	// 	// parsedZapImoveis = append(parsedZapImoveis, parsedImovel)
+	// 	// } else {
+	// 	// 	// parsedVivaImoveis = append(parsedVivaImoveis, parsedImovel)
+	// 	// }
+	// 	wg.Add(1)
+	// 	go func() {
+	// 		parserParallel(imovel, channelZap, channelViva)
+	// 		wg.Done()
+	// 	}()
+	// }
+	// wg.Wait()
+	// for c := range channelZap {
+	// 	fmt.Println(c)
+	// }
 
-	}
+	// PlatformTypeStruct := PlatformType{
+	// 	Zap:      parsedZapImoveis,
+	// 	VivaReal: parsedVivaImoveis,
+	// }
 
-	PlatformTypeStruct := PlatformType{
-		Zap:      parsedZapImoveis,
-		VivaReal: parsedVivaImoveis,
-	}
+	// f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// defer f.Close()
 
-	f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer f.Close()
+	// bytes, err := json.Marshal(PlatformTypeStruct)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 
-	bytes, err := json.Marshal(PlatformTypeStruct)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// if _, err := f.Write(bytes); err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	if _, err := f.Write(bytes); err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
+	// fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
+	go RunParser(imoveis, channelZap, channelViva, quit)
+	parserReceiver(channelZap, channelViva, quit)
 }
 
-func parser(imovel Imovel) (Imovel, string, error) {
+func RunParser(imoveis []Imovel, channelZap chan Imovel, channelViva chan Imovel, quit chan bool) {
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		for _, imovel := range imoveis {
+			parserParallel(imovel, channelZap, channelViva)
+		}
+		wg.Done()
+	}()
+	wg.Wait()
+	close(channelZap)
+	close(channelViva)
+	quit <- true
+}
+
+func parserReceiver(channelZap chan Imovel, channelViva chan Imovel, quit chan bool) {
+	for {
+		select {
+		case v := <-channelZap:
+			fmt.Println(v)
+		case v := <-channelViva:
+			fmt.Println(v)
+		case v, ok := <-quit:
+			if !ok {
+				fmt.Println("Deu zebra: ", v)
+			} else {
+				fmt.Println("Encerrando. Recebemos: ", v)
+			}
+			return
+		}
+	}
+}
+
+func parserParallel(imovel Imovel, channelZap chan Imovel, channelViva chan Imovel) {
 	if validateLongAndLat(imovel) {
-		return imovel, "", errors.New("Invalid imovel")
+		fmt.Println(imovel.ID, "Invalid imovel")
 	}
 
 	if imovel.Pricinginfos.Businesstype == consts.SALE {
 		parsedImovel, err := parserToZap(imovel)
 		if err != nil {
-			return parsedImovel, "", err
+			fmt.Println(err)
 		}
-		return parsedImovel, "zap", nil
+		channelZap <- parsedImovel
 	}
 
 	if imovel.Pricinginfos.Businesstype == consts.RENTAL {
 		parsedImovel, err := parseToVivaReal(imovel)
 		if err != nil {
-			return parsedImovel, "", err
+			fmt.Println(err)
 		}
-		return parsedImovel, "viva", nil
+		channelViva <- parsedImovel
 	}
-	return imovel, "", nil
 }
 
 func parserToZap(imovel Imovel) (Imovel, error) {
