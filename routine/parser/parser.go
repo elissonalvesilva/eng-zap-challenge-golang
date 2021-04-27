@@ -18,10 +18,7 @@ type PlatformType struct {
 	VivaReal []Imovel `json:"vivareal"`
 }
 
-func Run() {
-	var parsedZapImoveis []Imovel
-	var parsedVivaImoveis []Imovel
-
+func readCatalog() []Imovel {
 	path_catalog := os.Getenv("PATH_DADOS") + os.Getenv("FILENAME_CATALOG")
 	jsonFile, err := os.Open(path_catalog)
 
@@ -35,68 +32,84 @@ func Run() {
 	if err := json.Unmarshal(data, &imoveis); err != nil {
 		panic(err)
 	}
+	return imoveis
+}
 
+func Run() {
+	// var parsedZapImoveis []Imovel
+	// var parsedVivaImoveis []Imovel
+	imoveis := readCatalog()
+
+	zap := make(chan Imovel)
+	viva := make(chan Imovel)
+	err := make(chan error)
+	quit := make(chan bool)
+
+	go parser(imoveis, zap, viva, quit, err)
+	receive(zap, viva, quit, err)
+	// fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
+}
+
+func receive(zap chan Imovel, viva chan Imovel, quit chan bool, err chan error) {
+	var parsedZapImoveis []Imovel
+	var parsedVivaImoveis []Imovel
+	var errors []error
+	for {
+		select {
+		case v := <-zap:
+			parsedZapImoveis = append(parsedZapImoveis, v)
+		case v := <-viva:
+			parsedVivaImoveis = append(parsedVivaImoveis, v)
+		case v := <-err:
+			errors = append(errors, v)
+		case v, ok := <-quit:
+			if !ok {
+				fmt.Println("Deu zebra: ", v)
+			} else {
+				fmt.Println("Encerrando. Recebemos: ", v)
+				fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
+			}
+			return
+		}
+	}
+
+}
+
+func parser(imoveis []Imovel, zap chan Imovel, viva chan Imovel, quit chan bool, err chan error) {
 	for _, imovel := range imoveis {
-		parsedImovel, platformType, err := parser(imovel)
-
-		if err != nil {
-			fmt.Println(imovel.ID, err)
+		if validateLongAndLat(imovel) {
+			err <- errors.New("EERROR")
 			continue
 		}
 
-		if platformType == "zap" {
-			parsedZapImoveis = append(parsedZapImoveis, parsedImovel)
-		} else {
-			parsedVivaImoveis = append(parsedVivaImoveis, parsedImovel)
+		if imovel.Pricinginfos.Businesstype == consts.SALE {
+			parsedImovel, errr := parserToZap(imovel)
+
+			if errr != nil {
+				err <- errr
+				continue
+
+			}
+
+			zap <- parsedImovel
+			continue
 		}
 
-	}
+		if imovel.Pricinginfos.Businesstype == consts.RENTAL {
+			parsedImovel, errr := parseToVivaReal(imovel)
+			if errr != nil {
+				err <- errr
+				continue
 
-	PlatformTypeStruct := PlatformType{
-		Zap:      parsedZapImoveis,
-		VivaReal: parsedVivaImoveis,
-	}
-
-	f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer f.Close()
-
-	bytes, err := json.Marshal(PlatformTypeStruct)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if _, err := f.Write(bytes); err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
-}
-
-func parser(imovel Imovel) (Imovel, string, error) {
-	if validateLongAndLat(imovel) {
-		return imovel, "", errors.New("Invalid imovel")
-	}
-
-	if imovel.Pricinginfos.Businesstype == consts.SALE {
-		parsedImovel, err := parserToZap(imovel)
-		if err != nil {
-			return parsedImovel, "", err
+			}
+			viva <- parsedImovel
+			continue
 		}
-		return parsedImovel, "zap", nil
 	}
-
-	if imovel.Pricinginfos.Businesstype == consts.RENTAL {
-		parsedImovel, err := parseToVivaReal(imovel)
-		if err != nil {
-			return parsedImovel, "", err
-		}
-		return parsedImovel, "viva", nil
-	}
-	return imovel, "", nil
+	close(zap)
+	close(viva)
+	close(err)
+	quit <- true
 }
 
 func parserToZap(imovel Imovel) (Imovel, error) {
