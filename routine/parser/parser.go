@@ -119,7 +119,7 @@ func parserToZap(imovel Imovel) (Imovel, error) {
 	}
 
 	parsedPrice, err := strconv.ParseFloat(imovel.Pricinginfos.Price, 64)
-	if err != nil {
+	if err != nil || parsedPrice <= 10 {
 		return imovel, errors.New("Invalid Price value")
 	}
 
@@ -144,7 +144,7 @@ func parseToVivaReal(imovel Imovel) (Imovel, error) {
 	}
 
 	parsedMontlyCondoFee, err := strconv.ParseFloat(imovel.Pricinginfos.Monthlycondofee, 64)
-	if err != nil {
+	if err != nil || parsedRentalTotalPrice == 0 {
 		return imovel, errors.New("Invalid Monthlycondofee value")
 	}
 
