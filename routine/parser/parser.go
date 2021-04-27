@@ -69,7 +69,7 @@ func Run() {
 		VivaReal: parsedVivaImoveis,
 	}
 
-	f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println(err)
 	}
