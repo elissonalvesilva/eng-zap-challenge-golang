@@ -8,8 +8,10 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
+	elapsed "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/time-track"
 	consts "github.com/elissonalvesilva/eng-zap-challenge-golang/utils"
 )
 
@@ -84,6 +86,7 @@ func Run() {
 		fmt.Println(err)
 	}
 
+	defer elapsed.TimeTrack(time.Now(), "parser")
 	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
 }
 
