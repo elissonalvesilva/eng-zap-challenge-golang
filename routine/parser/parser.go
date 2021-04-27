@@ -62,26 +62,27 @@ func Run() {
 			fmt.Println(response.parsedError)
 		}
 	}
-	// PlatformTypeStruct := PlatformType{
-	// 	Zap:      parsedZapImoveis,
-	// 	VivaReal: parsedVivaImoveis,
-	// }
 
-	// f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// defer f.Close()
+	PlatformTypeStruct := PlatformType{
+		Zap:      parsedZapImoveis,
+		VivaReal: parsedVivaImoveis,
+	}
 
-	// bytes, err := json.Marshal(PlatformTypeStruct)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
+	f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer f.Close()
 
-	// if _, err := f.Write(bytes); err != nil {
-	// 	fmt.Println(err)
-	// }
+	bytes, err := json.Marshal(PlatformTypeStruct)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if _, err := f.Write(bytes); err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
 }
