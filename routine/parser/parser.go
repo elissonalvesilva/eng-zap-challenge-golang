@@ -58,7 +58,8 @@ func Run() {
 			parsedZapImoveis = append(parsedZapImoveis, response.imovel)
 		} else if response.Type == "viva" {
 			parsedVivaImoveis = append(parsedVivaImoveis, response.imovel)
-
+		} else if response.Type == "Error" {
+			fmt.Println(response.parsedError)
 		}
 	}
 	// PlatformTypeStruct := PlatformType{
