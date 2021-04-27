@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"sync"
 	"time"
 
@@ -122,19 +121,19 @@ func parserToZap(imovel Imovel) (Imovel, error) {
 		return imovel, errors.New("Invalid Usableareas")
 	}
 
-	parsedPrice, err := strconv.ParseFloat(imovel.Pricinginfos.Price, 64)
-	if err != nil {
+	price := imovel.Pricinginfos.Price
+	if price <= 1 {
 		return imovel, errors.New("Invalid Price value")
 	}
 
-	valuePerMeter := parsedPrice / float64(imovel.Usableareas)
+	valuePerMeter := price / float64(imovel.Usableareas)
 	if valuePerMeter <= consts.ZAP_SALE_MIN_VALUE_BY_METER {
 		return imovel, errors.New("Invalid Value by Meter")
 	}
 
 	if isInBoundingBoxZap(imovel) {
 		minValueSale := consts.ZAP_SALE_MIN_VALUE - (consts.ZAP_SALE_MIN_VALUE * 0.1)
-		if minValueSale > parsedPrice {
+		if minValueSale > price {
 			return imovel, errors.New("Invalid min sale")
 		}
 	}
@@ -142,24 +141,24 @@ func parserToZap(imovel Imovel) (Imovel, error) {
 }
 
 func parseToVivaReal(imovel Imovel) (Imovel, error) {
-	parsedRentalTotalPrice, err := strconv.ParseFloat(imovel.Pricinginfos.RentalTotalPrice, 64)
-	if err != nil {
+	rentalTotalPrice := imovel.Pricinginfos.RentalTotalPrice
+	if rentalTotalPrice <= 10 {
 		return imovel, errors.New("Invalid Price Value")
 	}
 
-	parsedMontlyCondoFee, err := strconv.ParseFloat(imovel.Pricinginfos.Monthlycondofee, 64)
-	if err != nil || parsedMontlyCondoFee == 0 {
+	parsedMontlyCondoFee := imovel.Pricinginfos.Monthlycondofee
+	if parsedMontlyCondoFee == 0 {
 		return imovel, errors.New("Invalid Monthlycondofee value")
 	}
 
-	rentalValueAdd30Percent := parsedRentalTotalPrice + (parsedRentalTotalPrice * 0.3)
+	rentalValueAdd30Percent := rentalTotalPrice + (rentalTotalPrice * 0.3)
 	if parsedMontlyCondoFee >= rentalValueAdd30Percent {
 		return imovel, errors.New("Not Elegible Monthlycondofee")
 	}
 
 	if isInBoundingBoxZap(imovel) {
 		maxValueRental := consts.VIVAREAL_RENTAL_MAX_VALUE + (consts.VIVAREAL_RENTAL_MAX_VALUE * 0.5)
-		if maxValueRental < parsedRentalTotalPrice {
+		if maxValueRental < rentalTotalPrice {
 			return imovel, errors.New("Not Elegible max rental rental")
 		}
 	}
