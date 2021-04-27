@@ -85,33 +85,31 @@ func Run() {
 	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
 }
 
-func parser(imovel Imovel, wg *sync.WaitGroup, channel chan Response) (Imovel, string, error) {
+func parser(imovel Imovel, wg *sync.WaitGroup, channel chan Response) {
 	defer wg.Done()
 	if validateLongAndLat(imovel) {
 		channel <- Response{Type: "Error", imovel: imovel, parsedError: errors.New("Invalid imovel")}
-		return imovel, "", errors.New("Invalid imovel")
+		return
 	}
 
 	if imovel.Pricinginfos.Businesstype == consts.SALE {
 		parsedImovel, err := parserToZap(imovel)
 		if err != nil {
 			channel <- Response{Type: "Error", imovel: imovel, parsedError: err}
-			return parsedImovel, "", err
+			return
 		}
-		channel <- Response{Type: "zap", imovel: imovel, parsedError: nil}
-		return parsedImovel, "zap", nil
+		channel <- Response{Type: "zap", imovel: parsedImovel, parsedError: nil}
 	}
 
 	if imovel.Pricinginfos.Businesstype == consts.RENTAL {
 		parsedImovel, err := parseToVivaReal(imovel)
 		if err != nil {
 			channel <- Response{Type: "Error", imovel: imovel, parsedError: err}
-			return parsedImovel, "", err
+			return
 		}
-		channel <- Response{Type: "viva", imovel: imovel, parsedError: nil}
-		return parsedImovel, "viva", nil
+		channel <- Response{Type: "viva", imovel: parsedImovel, parsedError: nil}
 	}
-	return imovel, "", nil
+
 }
 
 func parserToZap(imovel Imovel) (Imovel, error) {
