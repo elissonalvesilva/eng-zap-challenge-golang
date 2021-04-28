@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	// coleta "github.com/elissonalvesilva/eng-zap-challenge-golang/routine/coleta"
+	coleta "github.com/elissonalvesilva/eng-zap-challenge-golang/routine/coleta"
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/routine/parser"
 
 	"github.com/joho/godotenv"
@@ -17,7 +17,7 @@ func init() {
 }
 
 func main() {
-	// coleta.InitColeta()
-	// coleta.Run()
+	coleta.InitColeta()
+	coleta.Run()
 	parser.Run()
 }
