@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sync"
 	"time"
@@ -13,7 +12,9 @@ import (
 	viva "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/vivareal"
 	zap "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/zap"
 
+	file "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/file-json"
 	elapsed "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/time-track"
+
 	consts "github.com/elissonalvesilva/eng-zap-challenge-golang/utils"
 )
 
@@ -34,14 +35,12 @@ func Run() {
 	var channel = make(chan Response)
 	var wg sync.WaitGroup
 	path_catalog := os.Getenv("PATH_DADOS") + os.Getenv("FILENAME_CATALOG")
-	jsonFile, err := os.Open(path_catalog)
+	data, err := file.Read(path_catalog)
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-	defer jsonFile.Close()
 
-	data, _ := ioutil.ReadAll(jsonFile)
 	var imoveis []entity.Imovel
 	if err := json.Unmarshal(data, &imoveis); err != nil {
 		panic(err)
@@ -71,20 +70,9 @@ func Run() {
 		VivaReal: parsedVivaImoveis,
 	}
 
-	f, err := os.OpenFile(os.Getenv("FILENAME_PARSED_CATALOG"), os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer f.Close()
-
-	bytes, err := json.Marshal(PlatformTypeStruct)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if _, err := f.Write(bytes); err != nil {
-		fmt.Println(err)
+	errToWriteFile := file.Write(os.Getenv("FILENAME_PARSED_CATALOG"), PlatformTypeStruct)
+	if errToWriteFile != nil {
+		panic(errToWriteFile)
 	}
 
 	defer elapsed.TimeTrack(time.Now(), "parser")
