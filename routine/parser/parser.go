@@ -66,7 +66,7 @@ func Run() {
 		VivaReal: parsedVivaImoveis,
 	}
 
-	errToWriteFile := file.Write(os.Getenv("FILENAME_PARSED_CATALOG"), PlatformTypeStruct)
+	errToWriteFile := file.Write(os.Getenv("PATH_DADOS")+os.Getenv("FILENAME_PARSED_CATALOG"), PlatformTypeStruct)
 	if errToWriteFile != nil {
 		panic(errToWriteFile)
 	}
