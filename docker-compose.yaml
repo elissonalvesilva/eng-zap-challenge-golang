@@ -1,9 +1,24 @@
 version: '3'
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
     ports:
      - "4513:4513"
      - "4514:4514"
     volumes:
-      - .:/go/src/app
+      - dados:/go/src/app
+    depends_on: 
+      - routine
+
+  routine:
+    build:
+      context: .
+      dockerfile: ./docker/routine/Dockerfile
+    volumes:
+      - dados:/go/src/app
+    command: /go/src/app/routine
+
+volumes:
+  dados:

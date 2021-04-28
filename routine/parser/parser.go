@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -22,6 +23,14 @@ type Response struct {
 	Type        string
 	imovel      protocols.Imovel
 	parsedError error
+}
+
+func removeLockRoutine() {
+	filename := os.Getenv("PATH_DADOS") + "lock"
+	e := os.Remove(filename)
+	if e != nil {
+		log.Fatal(e)
+	}
 }
 
 func Run() {
@@ -71,7 +80,8 @@ func Run() {
 	}
 
 	defer elapsed.TimeTrack(time.Now(), "parser")
-	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
+	defer removeLockRoutine()
+	fmt.Println("ZAP: ", len(parsedZapImoveis), "Viva:", len(parsedVivaImoveis))
 }
 
 func parser(imovel protocols.Imovel, wg *sync.WaitGroup, channel chan Response) {
