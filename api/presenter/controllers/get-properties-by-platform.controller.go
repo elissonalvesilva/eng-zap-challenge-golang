@@ -27,7 +27,7 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 	platform := mux.Vars(r)
 	var page int = 1
 	queryPage := r.URL.Query().Get("page")
-	if queryPage != "" {
+	if queryPage != "" && queryPage != "0" {
 		convertedPage, err := strconv.ParseInt(queryPage, 10, 64)
 		if err != nil {
 			http.Error(w, err.Error(), 400)

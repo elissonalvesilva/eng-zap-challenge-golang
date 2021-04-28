@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -48,7 +48,7 @@ func checkLockFile(attemptsLockFile *int, stopCheck *bool) {
 	*attemptsLockFile++
 }
 
-func main() {
+func Run() {
 	attemptsLockFile := 0
 	stopCheck := false
 	for t := range time.Tick(2 * time.Second) {

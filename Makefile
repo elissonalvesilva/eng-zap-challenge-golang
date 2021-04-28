@@ -1,13 +1,18 @@
-.PHONY: build run-api run-routine
+.PHONY: build start stop logs logs-tail
 
 CONTAINER_NAME := olx-application
 
 build:
 	docker-compose build
 
-run-api:
+start:
 	docker-compose up -d
 
-run-routine:
-	docker-compose exec CONTAINER_NAME -- /app/routine
+stop:
+	docker-compose down
 
+logs:
+	docker logs -f $(CONTAINER_NAME) 
+
+logs-tail:
+	docker logs -f --tail 100 $(CONTAINER_NAME) 
