@@ -1,10 +1,10 @@
 package boundingbox
 
 import (
-	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 )
 
-func IsInBoundingBoxZap(data entity.Imovel) bool {
+func IsInBoundingBoxZap(data protocols.Imovel) bool {
 
 	minlon := -46.693419 // left
 	minlat := -23.568704 // top

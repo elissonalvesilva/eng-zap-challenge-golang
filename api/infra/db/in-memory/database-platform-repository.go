@@ -5,8 +5,6 @@ import (
 	"sync"
 
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
-
-	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
 )
 
 const (
@@ -46,7 +44,7 @@ func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string, 
 	return response, nil
 }
 
-func paginate(data []entity.Imovel, page int) protocols.ReturnPlatformResult {
+func paginate(data []protocols.Imovel, page int) protocols.ReturnPlatformResult {
 	start := (page - 1) * itemsPerPage
 	stop := start + itemsPerPage
 

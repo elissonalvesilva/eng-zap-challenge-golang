@@ -1,4 +1,4 @@
-package entity
+package protocols
 
 type Address struct {
 	City         string `json:"city"`

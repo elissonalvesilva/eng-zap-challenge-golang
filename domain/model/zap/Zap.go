@@ -3,12 +3,12 @@ package zapmodel
 import (
 	"errors"
 
-	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 	boudingbox "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/bounding-box"
 	consts "github.com/elissonalvesilva/eng-zap-challenge-golang/utils"
 )
 
-func NewImovel(imovel entity.Imovel) (entity.Imovel, error) {
+func NewImovel(imovel protocols.Imovel) (protocols.Imovel, error) {
 	if imovel.Usableareas == 0 {
 		return imovel, errors.New("Invalid Usableareas")
 	}

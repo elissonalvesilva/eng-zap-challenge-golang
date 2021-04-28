@@ -1,4 +1,4 @@
-package entity
+package protocols
 
 type PricingInfos struct {
 	Yearlyiptu       float64 `json:"yearlyIptu,string"`

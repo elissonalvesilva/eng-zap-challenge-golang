@@ -8,10 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
 	viva "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/vivareal"
 	zap "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/zap"
-	protocols "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 
 	file "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/file-json"
 	elapsed "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/time-track"
@@ -21,13 +20,13 @@ import (
 
 type Response struct {
 	Type        string
-	imovel      entity.Imovel
+	imovel      protocols.Imovel
 	parsedError error
 }
 
 func Run() {
-	var parsedZapImoveis []entity.Imovel
-	var parsedVivaImoveis []entity.Imovel
+	var parsedZapImoveis []protocols.Imovel
+	var parsedVivaImoveis []protocols.Imovel
 	var channel = make(chan Response)
 	var wg sync.WaitGroup
 	path_catalog := os.Getenv("PATH_DADOS") + os.Getenv("FILENAME_CATALOG")
@@ -37,7 +36,7 @@ func Run() {
 		panic(err)
 	}
 
-	var imoveis []entity.Imovel
+	var imoveis []protocols.Imovel
 	if err := json.Unmarshal(data, &imoveis); err != nil {
 		panic(err)
 	}
@@ -75,7 +74,7 @@ func Run() {
 	fmt.Println(len(parsedZapImoveis), len(parsedVivaImoveis))
 }
 
-func parser(imovel entity.Imovel, wg *sync.WaitGroup, channel chan Response) {
+func parser(imovel protocols.Imovel, wg *sync.WaitGroup, channel chan Response) {
 	defer wg.Done()
 	if validateLongAndLat(imovel) {
 		channel <- Response{Type: "Error", imovel: imovel, parsedError: errors.New("Invalid imovel")}
@@ -102,7 +101,7 @@ func parser(imovel entity.Imovel, wg *sync.WaitGroup, channel chan Response) {
 
 }
 
-func validateLongAndLat(imovel entity.Imovel) bool {
+func validateLongAndLat(imovel protocols.Imovel) bool {
 	isEmptyLatAndLong := false
 	if imovel.Address.Geolocation.Location.Lat == 0 &&
 		imovel.Address.Geolocation.Location.Lon == 0 {

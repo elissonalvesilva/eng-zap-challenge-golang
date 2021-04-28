@@ -3,12 +3,12 @@ package vivamodel
 import (
 	"errors"
 
-	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 	boudingbox "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/bounding-box"
 	consts "github.com/elissonalvesilva/eng-zap-challenge-golang/utils"
 )
 
-func NewImovel(imovel entity.Imovel) (entity.Imovel, error) {
+func NewImovel(imovel protocols.Imovel) (protocols.Imovel, error) {
 	rentalTotalPrice := imovel.Pricinginfos.RentalTotalPrice
 	if rentalTotalPrice <= 10 {
 		return imovel, errors.New("Invalid Price Value")
