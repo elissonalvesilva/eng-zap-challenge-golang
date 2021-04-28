@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	usecases "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/use-cases"
@@ -26,8 +27,10 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 	}
 
 	response, errorResponse := h.useCase.GetPropertiesByPlatformType(platform["platform"])
+	fmt.Println(errorResponse)
 	if errorResponse != nil {
-		json.NewEncoder(w).Encode(errorResponse)
+		http.Error(w, errorResponse.Error(), 400)
+		return
 	}
 
 	json.NewEncoder(w).Encode(response)

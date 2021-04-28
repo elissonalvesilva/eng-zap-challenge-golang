@@ -2,7 +2,7 @@ package usecases
 
 import (
 	repository "github.com/elissonalvesilva/eng-zap-challenge-golang/api/application/protocols"
-	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 )
 
 type GetPropertiesByPlatform struct {
@@ -15,11 +15,11 @@ func NewGetPropertiesByPlatformHandler(propertiesRepository repository.GetProper
 	}
 }
 
-func (r *GetPropertiesByPlatform) GetPropertiesByPlatformType(platform string) ([]entity.Imovel, error) {
+func (r *GetPropertiesByPlatform) GetPropertiesByPlatformType(platform string) (protocols.ReturnPlatformResult, error) {
 	response, err := r.repo.GetProperties(platform)
 
 	if err != nil {
-		return nil, err
+		return response, err
 	}
 
 	return response, nil

@@ -1,7 +1,7 @@
 package usecases
 
-import "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
+import "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 
 type GetPropertiesByPlatform interface {
-	GetPropertiesByPlatformType(platform string) ([]entity.Imovel, error)
+	GetPropertiesByPlatformType(platform string) (protocols.ReturnPlatformResult, error)
 }

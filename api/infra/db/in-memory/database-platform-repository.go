@@ -2,33 +2,68 @@ package inmemory
 
 import (
 	"errors"
-	"fmt"
 	"sync"
+
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
 )
 
+const (
+	itemsPerPage = 10
+)
+
 type DatabasePlatformLocalStorageRepository struct {
-	platforms map[string][]entity.Imovel
+	platforms protocols.PlatformType
 	mutex     *sync.Mutex
 }
 
-func NewDatabasePlatformLocalStorageRepository() *DatabasePlatformLocalStorageRepository {
+func NewDatabasePlatformLocalStorageRepository(imoveis protocols.PlatformType) *DatabasePlatformLocalStorageRepository {
 	return &DatabasePlatformLocalStorageRepository{
-		platforms: make(map[string][]entity.Imovel),
+		platforms: imoveis,
 		mutex:     new(sync.Mutex),
 	}
 }
 
-func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string) ([]entity.Imovel, error) {
+func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string) (protocols.ReturnPlatformResult, error) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	fmt.Println(d.platforms)
-	response := d.platforms[platform]
+	var response protocols.ReturnPlatformResult
 
-	if len(response) == 0 {
-		return nil, errors.New("Not found platform")
+	if platform == "zap" {
+		res := d.platforms.Zap
+		paginated := paginate(res, 1)
+		response = paginated
+	} else if platform == "vivareal" {
+		res := d.platforms.VivaReal
+		paginated := paginate(res, 1)
+
+		response = paginated
+	} else {
+		return response, errors.New("Not found platform")
 	}
 
 	return response, nil
+}
+
+func paginate(data []entity.Imovel, page int) protocols.ReturnPlatformResult {
+	start := (page - 1) * itemsPerPage
+	stop := start + itemsPerPage
+
+	if start > len(data) {
+		return protocols.ReturnPlatformResult{}
+	}
+
+	if stop > len(data) {
+		stop = len(data)
+	}
+
+	response := protocols.ReturnPlatformResult{
+		PageNumber: page,
+		PageSize:   itemsPerPage,
+		TotalCount: len(data),
+		Listings:   data[start:stop],
+	}
+
+	return response
 }

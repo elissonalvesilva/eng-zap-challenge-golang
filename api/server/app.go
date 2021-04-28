@@ -1,8 +1,13 @@
 package server
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
+	file "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/file-json"
 
 	usecases "github.com/elissonalvesilva/eng-zap-challenge-golang/api/application/use-cases"
 	controllers "github.com/elissonalvesilva/eng-zap-challenge-golang/api/presenter/controllers"
@@ -19,8 +24,19 @@ type App struct {
 }
 
 func NewApp() *App {
+	path_catalog := os.Getenv("PATH_DADOS") + os.Getenv("FILENAME_PARSED_CATALOG")
+	data, err := file.Read(path_catalog)
 
-	db := database.NewDatabasePlatformLocalStorageRepository()
+	if err != nil {
+		panic(err)
+	}
+
+	var imoveis protocols.PlatformType
+	if err := json.Unmarshal(data, &imoveis); err != nil {
+		panic(err)
+	}
+
+	db := database.NewDatabasePlatformLocalStorageRepository(imoveis)
 	getPropertiesUseCase := usecases.NewGetPropertiesByPlatformHandler(db)
 	controller := controllers.NewGetPropertiesByPlatformHandler(getPropertiesUseCase)
 
