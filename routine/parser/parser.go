@@ -11,17 +11,13 @@ import (
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/entity"
 	viva "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/vivareal"
 	zap "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/zap"
+	protocols "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 
 	file "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/file-json"
 	elapsed "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/time-track"
 
 	consts "github.com/elissonalvesilva/eng-zap-challenge-golang/utils"
 )
-
-type PlatformType struct {
-	Zap      []entity.Imovel `json:"zap"`
-	VivaReal []entity.Imovel `json:"vivareal"`
-}
 
 type Response struct {
 	Type        string
@@ -65,7 +61,7 @@ func Run() {
 		}
 	}
 
-	PlatformTypeStruct := PlatformType{
+	PlatformTypeStruct := protocols.PlatformType{
 		Zap:      parsedZapImoveis,
 		VivaReal: parsedVivaImoveis,
 	}

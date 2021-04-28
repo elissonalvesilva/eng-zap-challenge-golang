@@ -10,7 +10,6 @@ import (
 	database "github.com/elissonalvesilva/eng-zap-challenge-golang/api/infra/db/in-memory"
 
 	"github.com/gorilla/mux"
-	// controllers "github.com/elissonalvesilva/eng-zap-challenge-golang/api/presenter/controllers"
 )
 
 type App struct {
@@ -21,7 +20,7 @@ type App struct {
 
 func NewApp() *App {
 
-	db := database.NewDatabaseLocalStorage()
+	db := database.NewDatabasePlatformLocalStorageRepository()
 	getPropertiesUseCase := usecases.NewGetPropertiesByPlatformHandler(db)
 	controller := controllers.NewGetPropertiesByPlatformHandler(getPropertiesUseCase)
 
