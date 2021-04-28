@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	usecases "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/use-cases"
+	timetrack "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/time-track"
 	"github.com/gorilla/mux"
 )
 
@@ -21,6 +22,8 @@ func NewGetPropertiesByPlatformHandler(useCase usecases.GetPropertiesByPlatform)
 }
 
 func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.ResponseWriter, r *http.Request) {
+	defer timetrack.TimeTrack(time.Now(), r.RequestURI+" Finished in ")
+
 	platform := mux.Vars(r)
 	var page int = 1
 	queryPage := r.URL.Query().Get("page")
@@ -38,7 +41,6 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 	}
 
 	response, errorResponse := h.useCase.GetPropertiesByPlatformType(platform["platform"], page)
-	fmt.Println(errorResponse)
 	if errorResponse != nil {
 		http.Error(w, errorResponse.Error(), 400)
 		return

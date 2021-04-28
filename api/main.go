@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"sync"
 
 	server "github.com/elissonalvesilva/eng-zap-challenge-golang/api/server"
 	"github.com/joho/godotenv"
@@ -15,5 +16,19 @@ func init() {
 }
 
 func main() {
-	server.NewApp().Run()
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+
+	go func() {
+		server.NewApp(4513).Run("Platform API")
+		wg.Done()
+	}()
+
+	go func() {
+		server.NewApp(4514).Run("Platform API")
+		wg.Done()
+	}()
+
+	wg.Wait()
 }

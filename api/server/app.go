@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -19,11 +19,11 @@ import (
 
 type App struct {
 	httpServer *http.Server
-
-	handleController func(http.ResponseWriter, *http.Request)
 }
 
-func NewApp() *App {
+func NewApp(port int) *App {
+	router := mux.NewRouter()
+
 	path_catalog := os.Getenv("PATH_DADOS") + os.Getenv("FILENAME_PARSED_CATALOG")
 	data, err := file.Read(path_catalog)
 
@@ -40,15 +40,17 @@ func NewApp() *App {
 	getPropertiesUseCase := usecases.NewGetPropertiesByPlatformHandler(db)
 	controller := controllers.NewGetPropertiesByPlatformHandler(getPropertiesUseCase)
 
+	router.HandleFunc("/search/{platform}", controller.GetPropertiesByPlatform).Methods("GET")
+
 	return &App{
-		handleController: controller.GetPropertiesByPlatform,
+		httpServer: &http.Server{
+			Addr:    fmt.Sprintf(":%v", port),
+			Handler: router,
+		},
 	}
 }
 
-func (a *App) Run() {
-	router := mux.NewRouter()
-
-	router.HandleFunc("/search/{platform}", a.handleController).Methods("GET")
-	log.Fatal(http.ListenAndServe(":4513", router))
-
+func (a *App) Run(application string) {
+	fmt.Println(application+" Is running in port", a.httpServer.Addr)
+	a.httpServer.ListenAndServe()
 }
