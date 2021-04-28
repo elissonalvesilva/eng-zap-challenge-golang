@@ -25,18 +25,18 @@ func NewDatabasePlatformLocalStorageRepository(imoveis protocols.PlatformType) *
 	}
 }
 
-func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string) (protocols.ReturnPlatformResult, error) {
+func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string, page int) (protocols.ReturnPlatformResult, error) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	var response protocols.ReturnPlatformResult
 
 	if platform == "zap" {
 		res := d.platforms.Zap
-		paginated := paginate(res, 1)
+		paginated := paginate(res, page)
 		response = paginated
 	} else if platform == "vivareal" {
 		res := d.platforms.VivaReal
-		paginated := paginate(res, 1)
+		paginated := paginate(res, page)
 
 		response = paginated
 	} else {
