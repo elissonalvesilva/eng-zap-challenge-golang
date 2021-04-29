@@ -23,11 +23,11 @@ func NewDatabasePlatformLocalStorageRepository(imoveis protocols.PlatformType) *
 	}
 }
 
-func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string, page int) (protocols.ReturnPlatformResult, error) {
+func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string, page int) (protocols.ReturnPlatformResult, protocols.ErrorResponse) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	var response protocols.ReturnPlatformResult
-
+	var err = protocols.ErrorResponse{}
 	if platform == "zap" {
 		res := d.platforms.Zap
 		paginated := paginate(res, page)
@@ -38,10 +38,13 @@ func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string, 
 
 		response = paginated
 	} else {
-		return response, errors.New("Not found platform")
+		err = protocols.ErrorResponse{
+			Message: errors.New("Not found platform").Error(),
+		}
+		return response, err
 	}
 
-	return response, nil
+	return response, err
 }
 
 func paginate(data []protocols.Imovel, page int) protocols.ReturnPlatformResult {

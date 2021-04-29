@@ -2,12 +2,13 @@ package parser
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	errorsType "github.com/elissonalvesilva/eng-zap-challenge-golang/routine/errors"
 
 	viva "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/vivareal"
 	zap "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/zap"
@@ -87,7 +88,7 @@ func Run() {
 func parser(imovel protocols.Imovel, wg *sync.WaitGroup, channel chan Response) {
 	defer wg.Done()
 	if validateLongAndLat(imovel) {
-		channel <- Response{Type: "Error", imovel: imovel, parsedError: errors.New("Invalid imovel")}
+		channel <- Response{Type: "Error", imovel: imovel, parsedError: errorsType.InvalidLonAndLat(imovel.ID)}
 		return
 	}
 

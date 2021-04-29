@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 	usecases "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/use-cases"
 	timetrack "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/time-track"
 	"github.com/gorilla/mux"
@@ -30,19 +32,28 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 	if queryPage != "" && queryPage != "0" {
 		convertedPage, err := strconv.ParseInt(queryPage, 10, 64)
 		if err != nil {
-			http.Error(w, err.Error(), 400)
+			w.WriteHeader(500)
+			json.NewEncoder(w).Encode(protocols.ErrorResponse{
+				Message: "Internal server error",
+			})
+			fmt.Println(err)
 			return
 		}
 		page = int(convertedPage)
 	}
 
 	if platform["platform"] == "" {
-		json.NewEncoder(w).Encode("'platform' param must be pass")
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(protocols.ErrorResponse{
+			Message: "'platform' param must be pass",
+		})
+		return
 	}
 
 	response, errorResponse := h.useCase.GetPropertiesByPlatformType(platform["platform"], page)
-	if errorResponse != nil {
-		http.Error(w, errorResponse.Error(), 400)
+	if errorResponse != (protocols.ErrorResponse{}) {
+		w.WriteHeader(404)
+		json.NewEncoder(w).Encode(errorResponse)
 		return
 	}
 
