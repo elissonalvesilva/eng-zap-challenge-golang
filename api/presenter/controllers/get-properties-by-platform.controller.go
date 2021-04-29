@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
@@ -26,7 +27,7 @@ func NewGetPropertiesByPlatformHandler(useCase usecases.GetPropertiesByPlatform)
 func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.ResponseWriter, r *http.Request) {
 	defer timetrack.TimeTrack(time.Now(), r.RequestURI+" Finished in ")
 
-	platform := mux.Vars(r)
+	param := mux.Vars(r)
 	var page int = 1
 	queryPage := r.URL.Query().Get("page")
 	if queryPage != "" && queryPage != "0" {
@@ -42,7 +43,7 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 		page = int(convertedPage)
 	}
 
-	if platform["platform"] == "" {
+	if param["platform"] == "" {
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(protocols.ErrorResponse{
 			Message: "'platform' param must be pass",
@@ -50,7 +51,9 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 		return
 	}
 
-	response, errorResponse := h.useCase.GetPropertiesByPlatformType(platform["platform"], page)
+	platform := strings.ToLower(param["platform"])
+
+	response, errorResponse := h.useCase.GetPropertiesByPlatformType(platform, page)
 	if errorResponse != (protocols.ErrorResponse{}) {
 		w.WriteHeader(404)
 		json.NewEncoder(w).Encode(errorResponse)
