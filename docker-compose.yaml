@@ -1,0 +1,12 @@
+version: '3'
+services:
+  olx-application:
+    container_name: olx-application
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - "4513:4513"
+     - "4514:4514"
+    volumes:
+      - .:/go/src/app

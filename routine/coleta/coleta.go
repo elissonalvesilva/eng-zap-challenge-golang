@@ -14,6 +14,12 @@ var wg sync.WaitGroup
 var tmp_point_to_path_coleta *string
 var tmp_point_to_path_dados *string
 
+func createLockFile() {
+	filename := *tmp_point_to_path_dados + "lock"
+	createFileIfNotExist(filename)
+	ioutil.WriteFile(filename, []byte("Routine is Running"), 0x644)
+}
+
 func InitColeta() {
 	log.Println("routine.coleta - Starting ...")
 	dir, _ := os.Getwd()
@@ -22,18 +28,19 @@ func InitColeta() {
 	tmp_point_to_path_coleta = &path
 	tmp_point_to_path_dados = &path_dados
 	createFileIfNotExist(*tmp_point_to_path_dados + os.Getenv("FILENAME_CATALOG"))
+	createLockFile()
 }
 
 func Run() {
 	log.Println("routine.coleta - Running Coleta ...")
 	log.Println("routine.coleta - Download file from: http://grupozap-code-challenge.s3-website-us-east-1.amazonaws.com/sources/source-2.json")
-	res, _ := http.Head("http://grupozap-code-challenge.s3-website-us-east-1.amazonaws.com/sources/source-2.json") // 187 MB file of random numbers per line
+	res, _ := http.Head("http://grupozap-code-challenge.s3-website-us-east-1.amazonaws.com/sources/source-2.json")
 	maps := res.Header
-	length, _ := strconv.Atoi(maps["Content-Length"][0]) // Get the content length from the header request
-	limit := 10                                          // 10 Go-routines for the process so each downloads 18.7MB
-	len_sub := length / limit                            // Bytes for each Go-routine
-	diff := length % limit                               // Get the remaining for the last request
-	body := make([]string, 11)                           // Make up a temporary array to hold the data to be written to the file
+	length, _ := strconv.Atoi(maps["Content-Length"][0])
+	limit := 10
+	len_sub := length / limit
+	diff := length % limit
+	body := make([]string, 11)
 	for i := 0; i < limit; i++ {
 		wg.Add(1)
 
