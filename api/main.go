@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	server "github.com/elissonalvesilva/eng-zap-challenge-golang/api/server"
+	server "github.com/elissonalvesilva/eng-zap-challenge-golang/api/main"
 	"github.com/joho/godotenv"
 )
 
