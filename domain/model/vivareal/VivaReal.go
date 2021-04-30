@@ -11,7 +11,7 @@ import (
 func NewImovel(imovel protocols.Imovel) (protocols.Imovel, error) {
 	rentalTotalPrice := imovel.Pricinginfos.RentalTotalPrice
 	if rentalTotalPrice <= 10 {
-		return imovel, modelError.InvalidPriceValue(imovel.ID)
+		return imovel, modelError.InvalidTotalRentalPriceValue(imovel.ID)
 	}
 
 	parsedMontlyCondoFee := imovel.Pricinginfos.Monthlycondofee
