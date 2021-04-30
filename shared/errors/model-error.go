@@ -6,6 +6,10 @@ func InvalidPriceValue(id string) error {
 	return errors.New("[ERROR] - Invalid Price Value - ID: " + id)
 }
 
+func InvalidTotalRentalPriceValue(id string) error {
+	return errors.New("[ERROR] - Invalid Rental Total Price Value - ID: " + id)
+}
+
 func InvalidMonthlycondofeeValue(id string) error {
 	return errors.New("[ERROR] - Invalid Monthlycondofee value - ID: " + id)
 }
