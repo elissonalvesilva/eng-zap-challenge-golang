@@ -72,7 +72,7 @@ func TestGetPropertiesByPlatformPlatformParam(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/search/{platform}", nil)
 	w := httptest.NewRecorder()
 
-	makeSut().sut.GetPropertiesByPlatform(w, r)
+	makeSut().sut.GetPropertiesByPlatformController(w, r)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
@@ -92,7 +92,7 @@ func TestGetPropertiesByPlatformPageParam(t *testing.T) {
 	params.Set("page", "aaa")
 	r.URL.RawQuery = params.Encode()
 
-	makeSut().sut.GetPropertiesByPlatform(w, r)
+	makeSut().sut.GetPropertiesByPlatformController(w, r)
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
@@ -117,7 +117,7 @@ func TestGetPropertiesByPlatformNotFoundPlatform(t *testing.T) {
 
 	sut := controllers.NewGetPropertiesByPlatformHandler(testObj)
 
-	sut.GetPropertiesByPlatform(w, r)
+	sut.GetPropertiesByPlatformController(w, r)
 	testObj.AssertExpectations(t)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
@@ -143,7 +143,7 @@ func TestGetPropertiesByPlatformSuccessToGetPlatform(t *testing.T) {
 
 	sut := controllers.NewGetPropertiesByPlatformHandler(testObj)
 
-	sut.GetPropertiesByPlatform(w, r)
+	sut.GetPropertiesByPlatformController(w, r)
 	testObj.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
