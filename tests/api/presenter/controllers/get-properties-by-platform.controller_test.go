@@ -5,11 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mockImovel "github.com/elissonalvesilva/eng-zap-challenge-golang/__tests__/mock"
 	usecases "github.com/elissonalvesilva/eng-zap-challenge-golang/api/application/use-cases"
 	database "github.com/elissonalvesilva/eng-zap-challenge-golang/api/infra/db/in-memory"
 	controllers "github.com/elissonalvesilva/eng-zap-challenge-golang/api/presenter/controllers"
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
+	mockImovel "github.com/elissonalvesilva/eng-zap-challenge-golang/tests/mock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

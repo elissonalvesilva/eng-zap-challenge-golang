@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	mock "github.com/elissonalvesilva/eng-zap-challenge-golang/__tests__/mock"
+	mock "github.com/elissonalvesilva/eng-zap-challenge-golang/tests/mock"
 
 	viva "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/vivareal"
 	modelError "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/errors"

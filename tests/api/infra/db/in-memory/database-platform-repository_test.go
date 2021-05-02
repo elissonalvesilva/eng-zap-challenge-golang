@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	mockImovel "github.com/elissonalvesilva/eng-zap-challenge-golang/__tests__/mock"
 	database "github.com/elissonalvesilva/eng-zap-challenge-golang/api/infra/db/in-memory"
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
+	mockImovel "github.com/elissonalvesilva/eng-zap-challenge-golang/tests/mock"
 	"github.com/stretchr/testify/assert"
 )
 

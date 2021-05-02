@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	mock "github.com/elissonalvesilva/eng-zap-challenge-golang/__tests__/mock"
 	zap "github.com/elissonalvesilva/eng-zap-challenge-golang/domain/model/zap"
+	mock "github.com/elissonalvesilva/eng-zap-challenge-golang/tests/mock"
 
 	"github.com/elissonalvesilva/eng-zap-challenge-golang/domain/protocols"
 	modelError "github.com/elissonalvesilva/eng-zap-challenge-golang/shared/errors"

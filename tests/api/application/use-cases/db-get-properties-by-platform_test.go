@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mockImovel "github.com/elissonalvesilva/eng-zap-challenge-golang/__tests__/mock"
+	mockImovel "github.com/elissonalvesilva/eng-zap-challenge-golang/tests/mock"
 )
 
 type GetPropertiesSuccess struct {
