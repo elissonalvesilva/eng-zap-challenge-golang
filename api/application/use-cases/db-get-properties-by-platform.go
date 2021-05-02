@@ -17,8 +17,7 @@ func NewGetPropertiesByPlatformHandler(propertiesRepository repository.GetProper
 
 func (r *GetPropertiesByPlatform) GetPropertiesByPlatformType(platform string, page int) (protocols.ReturnPlatformResult, protocols.ErrorResponse) {
 	response, err := r.repo.GetProperties(platform, page)
-
-	if err != (protocols.ErrorResponse{}) {
+	if err.Message != "" {
 		return response, err
 	}
 
