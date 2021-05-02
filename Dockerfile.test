@@ -1,0 +1,9 @@
+FROM golang:latest as BUILD
+
+ENV GO111MODULE=on
+
+WORKDIR /testdir
+
+COPY . .
+
+ENTRYPOINT ["go", "test", "-v", "./tests/...", "-coverprofile", "cover.out"]
