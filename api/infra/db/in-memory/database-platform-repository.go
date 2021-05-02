@@ -12,28 +12,28 @@ const (
 )
 
 type DatabasePlatformLocalStorageRepository struct {
-	platforms protocols.PlatformType
-	mutex     *sync.Mutex
+	Platforms protocols.PlatformType
+	Mutex     *sync.Mutex
 }
 
 func NewDatabasePlatformLocalStorageRepository(imoveis protocols.PlatformType) *DatabasePlatformLocalStorageRepository {
 	return &DatabasePlatformLocalStorageRepository{
-		platforms: imoveis,
-		mutex:     new(sync.Mutex),
+		Platforms: imoveis,
+		Mutex:     new(sync.Mutex),
 	}
 }
 
 func (d *DatabasePlatformLocalStorageRepository) GetProperties(platform string, page int) (protocols.ReturnPlatformResult, protocols.ErrorResponse) {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
+	d.Mutex.Lock()
+	defer d.Mutex.Unlock()
 	var response protocols.ReturnPlatformResult
 	var err = protocols.ErrorResponse{}
 	if platform == "zap" {
-		res := d.platforms.Zap
+		res := d.Platforms.Zap
 		paginated := paginate(res, page)
 		response = paginated
 	} else if platform == "vivareal" {
-		res := d.platforms.VivaReal
+		res := d.Platforms.VivaReal
 		paginated := paginate(res, page)
 
 		response = paginated
