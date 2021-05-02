@@ -17,7 +17,7 @@ func NewApp(port int) *App {
 	router := mux.NewRouter()
 
 	controller := controllers.MakeGetPropertiesByPlatformController()
-	router.HandleFunc("/search/{platform}", controller.GetPropertiesByPlatform).Methods("GET")
+	router.HandleFunc("/search/{platform}", controller.GetPropertiesByPlatformController).Methods("GET")
 
 	return &App{
 		httpServer: &http.Server{

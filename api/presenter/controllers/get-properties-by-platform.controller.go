@@ -24,7 +24,7 @@ func NewGetPropertiesByPlatformHandler(useCase usecases.GetPropertiesByPlatform)
 	}
 }
 
-func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.ResponseWriter, r *http.Request) {
+func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatformController(w http.ResponseWriter, r *http.Request) {
 	defer timetrack.TimeTrack(time.Now(), r.RequestURI+" Finished in ")
 
 	param := mux.Vars(r)
