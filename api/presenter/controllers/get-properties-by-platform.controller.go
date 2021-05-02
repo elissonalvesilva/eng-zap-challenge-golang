@@ -30,6 +30,15 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 	param := mux.Vars(r)
 	var page int = 1
 	queryPage := r.URL.Query().Get("page")
+
+	if param["platform"] == "" {
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(protocols.ErrorResponse{
+			Message: "'platform' param must be pass",
+		})
+		return
+	}
+
 	if queryPage != "" && queryPage != "0" {
 		convertedPage, err := strconv.ParseInt(queryPage, 10, 64)
 		if err != nil {
@@ -41,14 +50,6 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatform(w http.Response
 			return
 		}
 		page = int(convertedPage)
-	}
-
-	if param["platform"] == "" {
-		w.WriteHeader(400)
-		json.NewEncoder(w).Encode(protocols.ErrorResponse{
-			Message: "'platform' param must be pass",
-		})
-		return
 	}
 
 	platform := strings.ToLower(param["platform"])
