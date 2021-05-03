@@ -1,0 +1,15 @@
+version: 2
+executorType: machine
+jobs:
+  build:
+    workDir: ./
+    steps:
+      - type: checkout
+      - type: shell
+        name: Setup Olx Application
+        command: |
+          make build
+      - type: shell
+        name: Test Olx Application Code
+        command: |
+          make test-docker
