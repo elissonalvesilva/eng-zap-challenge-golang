@@ -42,9 +42,9 @@ func (h *GetPropertiesByPlatformHandler) GetPropertiesByPlatformController(w htt
 	if queryPage != "" && queryPage != "0" {
 		convertedPage, err := strconv.ParseInt(queryPage, 10, 64)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(400)
 			json.NewEncoder(w).Encode(protocols.ErrorResponse{
-				Message: "Internal server error",
+				Message: "Not accepted param type, must to be a number for page",
 			})
 			fmt.Println(err)
 			return
