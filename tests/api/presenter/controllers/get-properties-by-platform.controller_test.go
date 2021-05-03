@@ -93,7 +93,7 @@ func TestGetPropertiesByPlatformPageParam(t *testing.T) {
 	r.URL.RawQuery = params.Encode()
 
 	makeSut().sut.GetPropertiesByPlatformController(w, r)
-	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 func TestGetPropertiesByPlatformNotFoundPlatform(t *testing.T) {
