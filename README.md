@@ -42,11 +42,17 @@ ou
  - GET `/search/{platform}`
  - Params
     - platform: string
+    - accepted params
+         - zap
+         - vivareal
 
 > Get Imoveis With Paginate
  - GET `/search/{platform}?page=<Number>`
  - Params
     - platform: string
+    - accepted params
+         - zap
+         - vivareal
  - Query param
     - page: integer
 
@@ -83,6 +89,16 @@ $ main
 $ docker-compose up -d
 ```
 
+## Logs
+**If you are using docker**
+- Show full logs
+```bash
+make logs
+```
+- Show tail logs (last 100 lines)
+```bash
+make logs-tail
+```
 
 ## Architecture
 <img src="./olx.png">
